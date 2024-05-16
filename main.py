@@ -3,6 +3,9 @@ import requests
 from quickstart import process_events
 from dotenv import load_dotenv
 
+KNOWN_BUGS = ['FP - week7A @FP', 'FP - week7B @FP']
+
+
 def setup_todoist():
     # Use the API key to authenticate with Todoist API
     todoist_api_key = os.getenv("TODOIST_API_KEY")
@@ -55,8 +58,14 @@ def main():
     # Filter for only non google calendar tasks
     completed_todoist_tasks = [task.get('content', '') for task in completed_tasks if not '@GCal' in task.get('content', '')]
 
+    # Filter out known problems from Todoist side
+    completed_todoist_tasks = [task for task in completed_todoist_tasks if task not in KNOWN_BUGS]
+
     # Process events
-    process_events(completed_todoist_tasks)
+    if len(completed_todoist_tasks) > 0:
+        process_events(completed_todoist_tasks)
+    else:
+        print("No completed Todoist tasks to process")
 
 if __name__ == '__main__':
     main()
