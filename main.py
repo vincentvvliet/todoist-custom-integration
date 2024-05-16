@@ -1,10 +1,7 @@
 import os
 import requests
-from dotenv import load_dotenv
 
-def authenticate_google_calendar():
-    google_calendar_api_key = os.getenv("GOOGLE_CALENDAR_API_KEY")
-    # Use the API key to authenticate with Google Calendar API
+from dotenv import load_dotenv
 
 def setup_todoist():
     # Use the API key to authenticate with Todoist API
@@ -49,6 +46,16 @@ def get_completed_tasks(headers, data):
 
     return items
 
+def find_event_ids(tasks):
+    base_url = os.getenv('GOOGLE_CALENDAR_BASE_URL')
+    ids = []
+    for task in tasks:
+        print(task)
+        response = requests.post(f"{base_url}calendars/calendarId/events")
+        ids.append()
+
+    return ids
+
 def main():
     # Load environment variables from .env file
     load_dotenv()
@@ -60,15 +67,19 @@ def main():
     completed_tasks = get_completed_tasks(headers, data)
 
     # Filter for only non google calendar tasks
-    completed_todoist_tasks = [task for task in completed_tasks if not '@GCal' in task.get('content', '')]
+    completed_todoist_tasks = [task.get('content', '') for task in completed_tasks if not '@GCal' in task.get('content', '')]
 
-    print("\nCompleted tasks originating from Todoist:")
-    for task in completed_todoist_tasks:
-        print(task)
-        # print(task.get('content', ''))
+    # Find event ID's
+    ids = find_event_ids(completed_todoist_tasks)
+
+    # print("\nCompleted tasks originating from Todoist:")
+    # for task in completed_todoist_tasks:
+    #     print(task)
+    #     response = requests.post(f"{google_calendar_base_url}calendars/calendarId/events", headers=headers, data=data)
+
 
     # TODO: Retrieve event from Google Calendar corresponding to the task
-    # TODO: Remove event from Google Calendar
+    # TODO: Remove event from Google Calendar (Events:delete)
 
 if __name__ == '__main__':
     main()
