@@ -59,17 +59,16 @@ def main():
     # Retrieve completed tasks from Todoist
     completed_tasks = get_completed_tasks(headers, data)
 
-    # Filter for only google calendar tasks
-    completed_google_calendar_tasks = [task for task in completed_tasks if '@GCal' in task.get('content', '')]
+    # Filter for only non google calendar tasks
+    completed_todoist_tasks = [task for task in completed_tasks if not '@GCal' in task.get('content', '')]
 
-    # Print completed tasks related to Google Calendar
-    print("\nCompleted tasks related to Google Calendar:")
-    for task in completed_google_calendar_tasks:
+    print("\nCompleted tasks originating from Todoist:")
+    for task in completed_todoist_tasks:
         print(task)
         # print(task.get('content', ''))
 
     # TODO: Retrieve event from Google Calendar corresponding to the task
-    # TODO: Add event back to Google Calendar
+    # TODO: Remove event from Google Calendar
 
 if __name__ == '__main__':
     main()
