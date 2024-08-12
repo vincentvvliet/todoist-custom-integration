@@ -1,7 +1,9 @@
 import os
+
 import requests
-from quickstart import process_events
 from dotenv import load_dotenv
+
+from quickstart import process_events
 
 KNOWN_BUGS = ['FP - week7A @FP', 'FP - week7B @FP']
 
