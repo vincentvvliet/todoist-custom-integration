@@ -3,9 +3,9 @@ import os
 import requests
 from dotenv import load_dotenv
 
-from quickstart import process_events
+from google_auth import process_events
 
-KNOWN_BUGS = ['FP - week7A @FP', 'FP - week7B @FP']
+KNOWN_BUGS = os.getenv('KNOWN_BUGS')
 
 
 def setup_todoist():

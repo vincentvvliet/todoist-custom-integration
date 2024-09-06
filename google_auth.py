@@ -1,57 +1,26 @@
-import os.path
-
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-# from google.oauth2.service_account import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
+import os
+from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from dotenv import load_dotenv
 
-# If modifying these scopes, delete the file token.json.
+# Define the scope for Google Calendar API
 SCOPES = ["https://www.googleapis.com/auth/calendar"]
+
+# Path to your service account key file
+load_dotenv()
+SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE")
 
 
 def authenticate():
     """
-    Authentication flow for Google Calendar API with improved error handling.
+    Authentication flow using a Google service account for Google Calendar API.
     """
-    creds = None
-    # Check if token.json exists and load credentials
-    if os.path.exists("token.json"):
-        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-
-    # If no valid credentials, authenticate the user
-    if not creds or not creds.valid:
-        try:
-            if creds and creds.expired and creds.refresh_token:
-                creds.refresh(Request())
-            else:
-                # Run authentication flow to get new credentials
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    "credentials.json", SCOPES
-                )
-                creds = flow.run_local_server(port=0)
-
-            # Save the credentials to token.json for future use
-            with open("token.json", "w") as token:
-                token.write(creds.to_json())
-
-        except Exception as e:
-            # Log and handle the refresh error
-            print(f"Failed to refresh credentials: {e}")
-            print("Re-authenticating with the OAuth flow...")
-
-            # Re-run the OAuth flow if refresh fails
-            flow = InstalledAppFlow.from_client_secrets_file(
-                "credentials.json", SCOPES
-            )
-            creds = flow.run_local_server(port=0)
-
-            # Save the new credentials
-            with open("token.json", "w") as token:
-                token.write(creds.to_json())
-
+    # Authenticate using service account credentials
+    creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPES)
     return creds
+
+
 def process_events(tasks: list) -> None:
     """
     Use Google Calendar API to process events by finding corresponding eventId's and consequently deleting those events.
@@ -108,3 +77,4 @@ def process_events(tasks: list) -> None:
 
     except HttpError as error:
         print(f"An error occurred: {error}")
+
